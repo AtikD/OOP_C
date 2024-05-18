@@ -170,7 +170,7 @@ inline const T* TArchive<T>::data() const noexcept{
 template<typename T>
 void TArchive<T>::swap(TArchive& archive) noexcept
 {
-    TArchive temp(this);
+    TArchive temp(*this);
     if (temp.empty() || this->empty()) { throw std::logic_error("Error in function \"void swap(TArchive& archive)\": One of the archives was empty."); }
 
     _size = archive._size;
@@ -197,11 +197,7 @@ void TArchive<T>::swap(TArchive& archive) noexcept
     delete[] archive._states;
     archive._states = new State[_capacity];
 
-    for (size_t i = 0; archive._size; i++)
-    {
-        archive._states[i] = temp._states[i];
-        archive._data[i] = temp._data[i];
-    }
+    *archive = &temp;
 }
 
 template<typename T>
@@ -264,9 +260,10 @@ void TArchive<T>::resize(size_t n)
 template <typename T>
 void TArchive<T>::reserve(size_t n)
 {
+    size_t last_pos = 0;
 	while (_deleted!=0)
 	{
-        for (size_t i = 0; i < _size; i++)
+        for (size_t i = last_pos; i < _size; i++)
         {
             if (_states[i] == State::deleted)
             {
@@ -276,6 +273,7 @@ void TArchive<T>::reserve(size_t n)
                 }
                 _size--;
                 _deleted--;
+                last_pos = i;
                 break;
             }
         }
@@ -320,7 +318,7 @@ TArchive<T>& TArchive<T>::insert(T value, size_t pos) {
     
     // действия при переполнении
     if (this->full()) {
-        this->reserve(15);
+        this->reserve(STEP_CAPACITY);
         // + внутри reserve() исключение, если достигнем масимально
         // возможного значения _capacity
     }
@@ -444,7 +442,7 @@ template<typename T>
  inline size_t TArchive<T>::find_last(T value)
  {
      size_t found_positions = -1;
-     for (size_t i = 0; i < _size; i++)
+     for (size_t i = _size; i > _size; i--)
      {
          if (_data[i] == value) 
              found_positions = i; 
