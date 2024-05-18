@@ -101,7 +101,7 @@ public:
 	size_t find(const CString& str) const;
 	size_t find(const char* s) const;
 	size_t find(const char* s, size_t n) const;
-	size_t find(char c) const;
+	size_t find(char c, size_t start) const;
 
 	size_t find_first_of(const CString& str) const;
 	size_t find_first_of(const char* s) const;

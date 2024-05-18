@@ -20,11 +20,11 @@ CString::CString(const CString& str)
 	size_ = str.size_;
 	capacity_ = str.capacity_;
 	data_ = new char[capacity_];
-	for (size_t i = 0; i < size_; i++)
+	for (size_t i = 0; i = size_ - 1; i++)
 	{
 		data_[i] = str.data_[i];
 	}
-	data_[size_] = '\0';
+	data_[size_-1] = '\0';
 }
 
 /// <summary>
@@ -94,6 +94,7 @@ CString::CString(const CString& str, size_t pos, size_t len)
 	size_ = len;
 
 	capacity_ = (size_ / step_capacity) * step_capacity + step_capacity;
+	delete[] data_;
 	data_ = new char[capacity_];
 	for (size_t i = 0; i < size_; i++)
 	{
@@ -386,6 +387,7 @@ void CString::clear() noexcept
 {
 	size_ = 0;
 	capacity_ = step_capacity;
+	delete[] data_;
 	data_ = new char[capacity_];
 	data_[0] = '\0';
 }
@@ -398,6 +400,8 @@ void CString::resize(size_t n)
 	size_ = n;
 	if (n > capacity_)
 		capacity_ = (size_ / step_capacity) * step_capacity + step_capacity;
+	delete[] data_;
+	data_ = new char[capacity_];
 	data_[size_] = '\0';
 }
 
@@ -409,6 +413,9 @@ void CString::reserve(size_t n)
 	size_ += n;
 	if (n > size_)
 		capacity_ = (n / step_capacity) * step_capacity + step_capacity;
+	delete[] data_;
+	data_ = new char[capacity_];
+
 }
 
 /// <summary>
@@ -450,6 +457,8 @@ CString& CString::erase(size_t pos, size_t len)
 			Temp.data_[i] = data_[i];
 	Temp.size_ = size_ - len;
 	Temp.capacity_ = (Temp.size_ / step_capacity) * step_capacity + step_capacity;
+	delete[] Temp.data_;
+	Temp.data_ = new char[capacity_];
 	Temp.data_[Temp.size_] = '\0';
 	this->swap(Temp);
 	return *this;
@@ -734,10 +743,10 @@ size_t CString::find(const char* s, size_t n) const
 /// <summary>
 /// Поиск символа
 /// </summary>
-size_t CString::find(char c) const
+size_t CString::find(char c, size_t start) const
 {
 	size_t pos = 0;
-	for (size_t i = 0; i < size_; i++)
+	for (size_t i = start; i < size_; i++)
 		if (data_[i] == c)
 			pos = i;
 	return pos;
