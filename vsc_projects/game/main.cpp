@@ -1,14 +1,15 @@
 #include <iostream>
-#include <game.hpp>
+#include "virtual/Position.hpp"
+#include "characters/Character.hpp"
+#include "characters/Target.hpp"
 
 
+int Character::count = 0;
+int Character::history_count = 0;
 
+int main(){
 
-int main() {
-    Character p1, p2("Bob", 120, 10, 30), p3("Piter");
-    std::cout << p1.count << " " << Character::count << "\n";
-    
-    p1.save(p2, p2.attack(p1));
- 
+    Target test(Position(0,0), 0);
+    std::cout << test.name() << "\n";
     return 0;
 }
